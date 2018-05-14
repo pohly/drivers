@@ -25,6 +25,10 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/container-storage-interface/spec/lib/go/csi/v0"
+
+	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	"github.com/opentracing/opentracing-go"
 )
 
 // Defines Non blocking GRPC server interfaces
@@ -89,8 +93,13 @@ func (s *nonBlockingGRPCServer) serve(endpoint string, ids csi.IdentityServer, c
 		glog.Fatalf("Failed to listen: %v", err)
 	}
 
+	interceptor := grpc_middleware.ChainUnaryServer(
+		otgrpc.OpenTracingServerInterceptor(
+			opentracing.GlobalTracer(),
+			otgrpc.SpanDecorator(TraceGRPCPayload)),
+		LogGRPCServer)
 	opts := []grpc.ServerOption{
-		grpc.UnaryInterceptor(LogGRPCServer),
+		grpc.UnaryInterceptor(interceptor),
 	}
 	server := grpc.NewServer(opts...)
 	s.server = server

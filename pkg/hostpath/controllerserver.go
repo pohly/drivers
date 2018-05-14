@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/golang/glog"
 	"github.com/pborman/uuid"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
@@ -42,7 +41,7 @@ type controllerServer struct {
 
 func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVolumeRequest) (*csi.CreateVolumeResponse, error) {
 	if err := cs.Driver.ValidateControllerServiceRequest(csi.ControllerServiceCapability_RPC_CREATE_DELETE_VOLUME); err != nil {
-		glog.V(3).Infof("invalid create volume req: %v", req)
+		csicommon.Infof(3, ctx, "invalid create volume req: %v", req)
 		return nil, err
 	}
 
@@ -81,10 +80,10 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 	path := provisionRoot + volumeID
 	err := os.MkdirAll(path, 0777)
 	if err != nil {
-		glog.V(3).Infof("failed to create volume: %v", err)
+		csicommon.Infof(3, ctx, "failed to create volume: %v", err)
 		return nil, err
 	}
-	glog.V(4).Infof("create volume %s", path)
+	csicommon.Infof(4, ctx, "create volume %s", path)
 	hostPathVol := hostPathVolume{}
 	hostPathVol.VolName = req.GetName()
 	hostPathVol.VolID = volumeID
@@ -108,11 +107,11 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 	}
 
 	if err := cs.Driver.ValidateControllerServiceRequest(csi.ControllerServiceCapability_RPC_CREATE_DELETE_VOLUME); err != nil {
-		glog.V(3).Infof("invalid delete volume req: %v", req)
+		csicommon.Infof(3, ctx, "invalid delete volume req: %v", req)
 		return nil, err
 	}
 	volumeID := req.VolumeId
-	glog.V(4).Infof("deleting volume %s", volumeID)
+	csicommon.Infof(4, ctx, "deleting volume %s", volumeID)
 	path := provisionRoot + volumeID
 	os.RemoveAll(path)
 	delete(hostPathVolumes, volumeID)

@@ -20,6 +20,7 @@ import (
 	"flag"
 	"os"
 
+	"github.com/kubernetes-csi/drivers/pkg/csi-common"
 	"github.com/kubernetes-csi/drivers/pkg/hostpath"
 )
 
@@ -35,6 +36,8 @@ var (
 
 func main() {
 	flag.Parse()
+	closer := csicommon.InitTracer("csi-hostpath-driver")
+	defer closer()
 
 	handle()
 	os.Exit(0)
