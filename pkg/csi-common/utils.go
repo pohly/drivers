@@ -92,7 +92,12 @@ func RunControllerandNodePublishServer(endpoint string, d *CSIDriver, cs csi.Con
 	s.Wait()
 }
 
-func logGRPC(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+// LogGRPCServer logs the server-side call information via glog.
+//
+// Warning: at log levels >= 5 the recorded information includes all
+// parameters, which potentially contains sensitive information like
+// the secrets.
+func LogGRPCServer(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	glog.V(3).Infof("GRPC call: %s", info.FullMethod)
 	glog.V(5).Infof("GRPC request: %+v", req)
 	resp, err := handler(ctx, req)
@@ -102,4 +107,17 @@ func logGRPC(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, h
 		glog.V(5).Infof("GRPC response: %+v", resp)
 	}
 	return resp, err
+}
+
+// LogGRPCClient does the same as LogGRPCServer, only on the client side.
+func LogGRPCClient(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+	glog.V(3).Infof("GRPC call: %s", method)
+	glog.V(5).Infof("GRPC request: %+v", req)
+	err := invoker(ctx, method, req, reply, cc, opts...)
+	if err != nil {
+		glog.Errorf("GRPC error: %v", err)
+	} else {
+		glog.V(5).Infof("GRPC response: %+v", reply)
+	}
+	return err
 }
