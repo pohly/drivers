@@ -74,7 +74,9 @@
   digest = "1:f958a1c137db276e52f0b50efee41a1a389dcdded59a69711f3e872757dab34b"
   name = "github.com/golang/protobuf"
   packages = [
+    "descriptor",
     "proto",
+    "protoc-gen-go/descriptor",
     "ptypes",
     "ptypes/any",
     "ptypes/duration",
@@ -168,6 +170,18 @@
   pruneopts = ""
   revision = "1624edc4454b8682399def8740d46db5e4362ba4"
   version = "v1.1.5"
+
+[[projects]]
+  branch = "older-csi"
+  digest = "1:adedad4525c2269f8e593072dc1905e8113400f1202ca3867b58e2e843dc071c"
+  name = "github.com/kubernetes-csi/csi-lib-utils"
+  packages = [
+    "protosanitizer",
+    "protosanitizer/csi10",
+  ]
+  pruneopts = ""
+  revision = "0f63044d1e9076e906ea68db7494ad4e868c49ff"
+  source = "github.com/pohly/csi-lib-utils"
 
 [[projects]]
   digest = "1:4c23ced97a470b17d9ffd788310502a077b9c1f60221a85563e49696276b4147"
@@ -847,6 +861,7 @@
     "github.com/gophercloud/gophercloud/openstack",
     "github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumes",
     "github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/volumeattach",
+    "github.com/kubernetes-csi/csi-lib-utils/protosanitizer",
     "github.com/pborman/uuid",
     "github.com/spf13/cobra",
     "github.com/stretchr/testify/assert",

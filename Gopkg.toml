@@ -20,6 +20,15 @@
 #  name = "github.com/x/y"
 #  version = "2.4.0"
 
+# TODO: enable pruning!
+#[prune]
+#  go-tests = true
+#  unused-packages = true
+
+[[override]]
+  name = "github.com/kubernetes-csi/csi-lib-utils"
+  source = "github.com/pohly/csi-lib-utils"
+  branch = "older-csi"
 
 [[constraint]]
   name = "github.com/container-storage-interface/spec"
